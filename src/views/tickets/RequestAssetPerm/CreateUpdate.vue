@@ -14,6 +14,7 @@ import Select2 from '@/components/Form/FormFields/Select2'
 import { getDaysFuture } from '@/utils/common'
 import { mapGetters, mapState } from 'vuex'
 import store from '@/store'
+import rules from '@/components/Form/DataForm/rules'
 
 export default {
   components: {
@@ -74,7 +75,8 @@ export default {
               }
             },
             clearable: true
-          }
+          },
+          hidden: true
         },
         apply_assets: {
           type: 'assetSelect',
@@ -88,7 +90,10 @@ export default {
                 return { label: item.name + '(' + item.address + ')', value: item.id }
               }
             }
-          }
+          },
+          rules: [
+            rules.Required
+          ]
         },
         apply_accounts: {
           component: AccountFormatter,
