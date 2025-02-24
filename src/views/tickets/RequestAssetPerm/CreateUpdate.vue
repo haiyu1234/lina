@@ -11,10 +11,9 @@
 import { GenericCreateUpdatePage } from '@/layout/components'
 import AccountFormatter from '@/views/perms/AssetPermission/components/AccountFormatter'
 import Select2 from '@/components/Form/FormFields/Select2'
-import { getDaysFuture } from '@/utils/common'
 import { mapGetters, mapState } from 'vuex'
-import store from '@/store'
 import rules from '@/components/Form/DataForm/rules'
+import BasicTree from '@/components/Form/FormFields/BasicTree.vue'
 
 export default {
   components: {
@@ -22,11 +21,11 @@ export default {
   },
   data() {
     const now = new Date()
-    const time = store.getters.publicSettings['TICKET_AUTHORIZE_DEFAULT_TIME']
-    const unit = store.getters.publicSettings['TICKET_AUTHORIZE_DEFAULT_TIME_UNIT']
-    const dividend = unit === 'hour' ? 24 : 1
-    const date_expired = getDaysFuture(time / dividend, new Date()).toISOString()
-    const date_start = now.toISOString()
+    now.setHours(23)
+    now.setMinutes(59)
+    now.setSeconds(59)
+    const date_expired = now.toISOString()
+    const date_start = new Date().toISOString()
     return {
       // 工单创建 隐藏提示信息中的跳转连接
       hasDetailInMsg: false,
@@ -37,13 +36,14 @@ export default {
         apply_date_start: date_start,
         apply_assets: [],
         org_id: '',
-        apply_actions: [this.$t('perms.all')]
+        apply_actions: ['connect', 'upload', 'paste']
       },
       fields: [
         [this.$t('common.Basic'), ['title', 'org_id']],
         [this.$t('tickets.RequestPerm'), [
           'apply_assets', 'apply_accounts',
-          'apply_actions', 'apply_date_start', 'apply_date_expired'
+          'apply_actions', 'apply_date_expired',
+          'apply_date_start'
         ]],
         [this.$t('common.Other'), ['comment']]
       ],
@@ -59,9 +59,19 @@ export default {
             disabled: true
           }
         },
+        apply_date_start: {
+          hidden: true
+        },
+        apply_date_expired: {
+          hidden: true
+        },
         apply_actions: {
           label: this.$t('perms.Actions'),
-          helpText: this.$t('common.actionsTips')
+          helpText: this.$t('common.actionsTips'),
+          component: BasicTree,
+          el: {
+            hiddenValue: ['download', 'copy', 'delete', 'share']
+          }
         },
         apply_nodes: {
           label: this.$t('perms.Node'),

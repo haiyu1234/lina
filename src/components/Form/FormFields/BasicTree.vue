@@ -24,6 +24,10 @@ export default {
       type: Array,
       default: () => []
     },
+    hiddenValue: {
+      type: Array,
+      default: () => []
+    },
     readonly: {
       type: Boolean,
       default: false
@@ -48,13 +52,21 @@ export default {
     },
     iTree() {
       if (!this.readonly) {
-        return this.tree
+        return this.filterTree(this.tree)
       } else {
         return this.setTreeReadonly(this.tree)
       }
     }
   },
   methods: {
+    filterTree(tree) {
+      return tree.filter(item => {
+        if (item.children) {
+          item.children = this.filterTree(item.children)
+        }
+        return !this.hiddenValue.includes(item.value)
+      })
+    },
     handleCheckChange(node, { checkedNodes }) {
       const checkedKeys = checkedNodes
         .filter(item => !item.children)
